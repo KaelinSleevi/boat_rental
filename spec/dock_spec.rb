@@ -69,6 +69,57 @@ RSpec.describe Dock do
         expect(dock.rental_log).to eq({kayak_1 => patrick, kayak_2 => patrick, sup_1 => eugene})
       end
 
-      it ''
+      it 'can charge based on hours and kayaks' do
+        dock = Dock.new("The Rowing Dock", 3)
+        kayak_1 = Boat.new(:kayak, 20)
+        kayak_2 = Boat.new(:kayak, 20)
+        sup_1 = Boat.new(:standup_paddle_board, 15)
+        patrick = Renter.new("Patrick Star", "4242424242424242")
+        eugene = Renter.new("Eugene Crabs", "1313131313131313")
+
+        dock.add_boat(kayak_1)
+        dock.add_boat(kayak_2)
+        dock.add_boat(sup_1)
+
+        dock.add_renters(patrick)
+        dock.add_renters(eugene)
+
+        dock.rent(kayak_1, patrick)
+        dock.rent(kayak_2, patrick)
+        dock.rent(sup_1, eugene)
+
+        kayak_1.add_hour
+        kayak_1.add_hour
+
+        dock.charge(kayak_1)
+
+        expect(dock.charge(kayak_1)).to eq({:card_number => patrick.credit_card_number, :amount => 40})
+      end
+
+      it 'can charge based on hours and boards' do
+        dock = Dock.new("The Rowing Dock", 3)
+        kayak_1 = Boat.new(:kayak, 20)
+        kayak_2 = Boat.new(:kayak, 20)
+        sup_1 = Boat.new(:standup_paddle_board, 15)
+        patrick = Renter.new("Patrick Star", "4242424242424242")
+        eugene = Renter.new("Eugene Crabs", "1313131313131313")
+
+        dock.add_boat(kayak_1)
+        dock.add_boat(kayak_2)
+        dock.add_boat(sup_1)
+
+        dock.add_renters(patrick)
+        dock.add_renters(eugene)
+
+        dock.rent(kayak_1, patrick)
+        dock.rent(kayak_2, patrick)
+        dock.rent(sup_1, eugene)
+
+        sup_1.add_hour
+        sup_1.add_hour
+        sup_1.add_hour
+
+        expect(dock.charge(sup_1)).to eq({:card_number => eugene.credit_card_number, :amount => 45})
+      end
     end
   end
